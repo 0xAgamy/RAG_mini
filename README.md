@@ -19,3 +19,16 @@ pip install -r requirements.txt
 ```bash
 cp .env.example .env
 ```
+## Run Docker Compose Services
+
+```bash
+
+ cd docker
+ cp .env.exmaple .env 
+```
+
+```bash
+
+cd docker
+sudo docker compose up -d 
+```
