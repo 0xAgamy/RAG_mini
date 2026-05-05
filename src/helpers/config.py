@@ -30,6 +30,10 @@ class Settings(BaseSettings):
     DEFAULT_GENERATION_MAX_OUTPUT_TOKENS:int= None
     DEFAULT_GENERATION_TEMPERATURE:float= None
 
+    VECTOR_DB_BACKEDN:str
+    VECTR_DB_PATH:str
+    VECTOR_DB_DISTANCE_METHOD:str
+
     model_config = SettingsConfigDict(env_file="src/.env")
 
 def get_settings():
