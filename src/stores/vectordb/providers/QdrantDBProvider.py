@@ -11,10 +11,10 @@ class QdrantDBProvider(VectorDBInterface):
         self.distance_method=None
 
         if distance_method == DistanceMethodEnum.COSINE.value:
-            self.distance_method= models.Distance.COSINE
+            self.distance_method= models.Distance.COSINE.value
         elif distance_method== DistanceMethodEnum.DOT.value:
             self.distance_method= models.Distance.DOT
-
+       
         self.logger= logging.getLogger(__name__)
 
 
@@ -73,6 +73,7 @@ class QdrantDBProvider(VectorDBInterface):
         try:
             _ =self.client.upload_collection(
                 collection_name=collection_name,
+                ids=[record_id],
                 vectors=vector,
                 payload={
                     "text":text,
@@ -81,7 +82,7 @@ class QdrantDBProvider(VectorDBInterface):
 
             )
         except Exception as e:
-            self.logger.error("Error while insert: {e}")
+            self.logger.error(f"Error while insert: {e}")
             return False
         return True
         
@@ -91,46 +92,44 @@ class QdrantDBProvider(VectorDBInterface):
                    record_id:List=None,
                    batch_size:int=50):
         if metadata is None:
-            metadata= metadata[None] * len(texts)
-
+            metadata = [None] * len(texts)
         if record_id is None:
-            record_id=record_id[None] * len(texts)
+            record_id = list(range(0, len(texts)))
 
-
-        for i in range(0,len(texts), batch_size):
-            batch_end= i + batch_size
-
-            batch_text= texts[i:batch_end]
-            batch_vectors= vectors[i:batch_end]
-            batch_metadata= metadata[i:batch_end]
-
-            batch_record={}
-            for x in range(len(batch_text)):
-                batch_record= {
-                    "vector":batch_vectors[x],
-                    "payload":{
-                        "text":batch_text[x],
-                        "metadata": batch_metadata[x]
-                    }
-                }
+        for i in range(0, len(texts), batch_size):
+            batch_end = i + batch_size
+            
+            b_ids = record_id[i:batch_end]
+            b_vectors = vectors[i:batch_end]
+            
+            b_payloads = [
+                {"text": txt, "metadata": meta} 
+                for txt, meta in zip(texts[i:batch_end], metadata[i:batch_end])
+            ]
 
             try:
-                _ = self.client.upload_collection(
+                
+                self.client.upload_collection(
                     collection_name=collection_name,
-                    vectors=batch_record["vector"].value,
-                    payload=batch_record["payload"].value
-
+                    ids=b_ids,
+                    vectors=b_vectors,
+                    payload=b_payloads,
+                    wait=True 
                 )
             except Exception as e:
-                self.logger.error("Error while inserting batch: {e}")
-                False
+                self.logger.error(f"Error while inserting-many batch starting at {i}: {e}")
+                return False
         return True
 
     def search_by_vector(self,collection_name:str,vector:list,limit:int=5):
-        self.client.query_points(
+   
+
+
+        return self.client.query_points(
             collection_name=collection_name,
             query=vector,
-            limit=limit
+            limit=limit,
+            
         )
 
         

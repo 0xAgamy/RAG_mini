@@ -25,5 +25,6 @@ class BaseController:
             db_name
         )
         if not os.path.exists(databaset_path):
-            os.mkdir(databaset_path)
+            os.makedirs(databaset_path)
+            # os.mkdir(databaset_path)
         return databaset_path
