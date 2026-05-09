@@ -17,6 +17,7 @@ class CoHereProvider(LLMInterface):
 
         self.embedding_model_id=None
         self.embedding_size=None
+        self.enums=CoHereEnums
 
         self.client=cohere.ClientV2(api_key=self.api_key)
         self.logger= logging.getLogger(__name__)
@@ -38,7 +39,7 @@ class CoHereProvider(LLMInterface):
         }
     
     def generate_text(self, prompt:str,
-                    chat_hsistory:list=[],
+                    chat_history:list=[],
                     max_output_tokens:int=None,
                     temperature:float=None):
         if not self.client:
@@ -50,12 +51,12 @@ class CoHereProvider(LLMInterface):
         max_output_tokens= max_output_tokens if max_output_tokens is not None else self.default_generation_max_output_tokens
         temperature=temperature if temperature is not None else self.default_generation_temperature 
 
-        chat_hsistory.append(
+        chat_history.append(
            self.construct_prompt(prompt,role=CoHereEnums.USER.value)
         )
         response=self.client.chat(
             model=self.generation_model_id,
-            messages=chat_hsistory,
+            messages=chat_history,
             temperature=temperature,
             max_tokens=max_output_tokens
         )

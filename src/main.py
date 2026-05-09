@@ -6,7 +6,7 @@ from src.helpers.config import get_settings
 from src.routes import base,data, nlp
 from src.stores.llm.LLMProviderFactory import LLMProviderFactory
 from src.stores.vectordb.VectorDBProviderFactory import VectorDBProviderFactory
-
+from src.stores.llm.templates.template_parser import TemplateParser
 
 
 
@@ -30,6 +30,9 @@ async def startup_span(app:FastAPI):
         provider=settings.VECTOR_DB_BACKEND
     )
     app.vectordb_client.connect()
+    app.template_parser=TemplateParser(
+        language=settings.DEFAULT_LANGUAGE
+    )
 
 
 async def shutdown_span(app:FastAPI):

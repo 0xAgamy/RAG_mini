@@ -5,7 +5,7 @@ services:
     ports:
       - "27007:27017"
     volumes:
-      - "mongodbdata:/data/db"
+      - mongodbdata:/data/db
     
     environment:
       - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}

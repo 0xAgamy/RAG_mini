@@ -33,6 +33,7 @@ class Settings(BaseSettings):
     VECTOR_DB_BACKEND:str
     VECTR_DB_PATH:str
     VECTOR_DB_DISTANCE_METHOD:str
+    DEFAULT_LANGUAGE:str
 
     model_config = SettingsConfigDict(env_file="src/.env")
 
