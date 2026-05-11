@@ -16,13 +16,13 @@ class NLPController(BaseController):
     
     def reset_vector_db_collection(self,project:Project):
         collection_name= self.create_collection_name(
-            project_id=project.id
+            project_id=project.project_id
         )
         return self.vectordb_client.delete_collection(collection_name=collection_name)
     
     def get_vector_db_collection_info(self, project:Project):
         collection_name= self.create_collection_name(
-            project_id=project.id
+            project_id=project.project_id
         )
         collection_info=self.vectordb_client.get_collection_info(
             collection_name=collection_name
@@ -37,7 +37,7 @@ class NLPController(BaseController):
                              do_reset:bool=False):
         # get collection name
         collection_name= self.create_collection_name(
-            project_id=project.id
+            project_id=project.project_id
         )
         # manage items
         texts= [c.chunk_text for c in chunks ]
@@ -71,7 +71,7 @@ class NLPController(BaseController):
     def search_vector_db_collection(self, project:Project,
                                     text:str,limit:int=10):
         collection_name= self.create_collection_name(
-        project_id=project.id
+        project_id=project.project_id
         )
          
         vector= self.embedding_client.embed_text(text=text,
