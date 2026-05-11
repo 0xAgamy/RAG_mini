@@ -14,7 +14,7 @@ from sqlalchemy.orm import sessionmaker
 
 async def startup_span(app:FastAPI):
     settings=get_settings()
-    postgres_conn= f"postgesql+asyncpg://{settings.POSTGRES_USERNAME}:{settings.POSTGRES_PASSWORD}@loaclhost:{settings.POSTGRES_PORT}/{settings.POSTGRES_MAIN_DATABASE}"
+    postgres_conn= f"postgresql+asyncpg://{settings.POSTGRES_USERNAME}:{settings.POSTGRES_PASSWORD}@localhost:{settings.POSTGRES_PORT}/{settings.POSTGRES_MAIN_DATABASE}"
     
     app.db_engine=create_async_engine(postgres_conn)
     

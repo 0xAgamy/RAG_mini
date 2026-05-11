@@ -125,7 +125,7 @@ async def process_endpoint(request:Request,project_id:int,process_request:Proces
                                                                  asset_type=AssetTeypeEnum.FILE.value)
 
         project_file_ids={
-            record.asset_project_id : record.asset_name
+            record.asset_id : record.asset_name
             for record in project_files
         }
     
@@ -172,7 +172,7 @@ async def process_endpoint(request:Request,project_id:int,process_request:Proces
             DataChunk(
                 chunk_text= chunk.page_content,
                 chunk_metadata= chunk.metadata,
-                chunk_order= i+1,
+                chunkd_order= i+1,
                 chunk_project_id= project.project_id,
                 chunk_asset_id=asset_id
             )

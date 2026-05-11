@@ -1,3 +1,3 @@
-from ragdb.schemes.asset import   Asset
-from ragdb.schemes.project import Project
-from ragdb.schemes.datachunk import DataChunk, RetrievedDocument
+from .schemes.asset import   Asset
+from .schemes.project import Project
+from .schemes.datachunk import DataChunk, RetrievedDocument
