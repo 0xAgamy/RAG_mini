@@ -1,20 +1,20 @@
 services:
-  mongodb:
-    image: mongo:8.2.7
-    container_name: mongodb
-    ports:
-      - "27007:27017"
-    volumes:
-      - mongodbdata:/data/db
+  # mongodb:
+  #   image: mongo:8.2.7
+  #   container_name: mongodb
+  #   ports:
+  #     - "27007:27017"
+  #   volumes:
+  #     - mongodbdata:/data/db
     
-    environment:
-      - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
-      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
+  #   environment:
+  #     - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
+  #     - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
 
-    networks:
-      - backend
+  #   networks:
+  #     - backend
 
-    restart: always
+  #   restart: always
 
 
 

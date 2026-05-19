@@ -2,6 +2,10 @@ from ..LLMInterface import LLMInterface
 from ..LLMEnums import CoHereEnums, DocumentTypeEnum
 import cohere
 import logging
+from typing import Union, List
+import asyncio
+from time import sleep
+
 class CoHereProvider(LLMInterface):
     def __init__(self, api_key:str,
                  default_input_max_characters:int=1000,
@@ -67,11 +71,13 @@ class CoHereProvider(LLMInterface):
         return response.message.content[0].text
             
 
-    def embed_text(self, text:str, document_type:str=None):
+    def embed_text(self, text:Union[str,List[str]], document_type:str=None):
         
         if not self.client:
             self.logger.error("Embedding Model for CoHere was not set")
             return None
+        if isinstance(text,str):
+            text = [text]
         if not self.embedding_model_id:
             self.logger.error("Embedding Model for CoHere was not set")
             return None
@@ -82,13 +88,15 @@ class CoHereProvider(LLMInterface):
         
         res= self.client.embed(
             model=self.embedding_model_id,
-            texts=[self.process_text(text)],
+            texts=[self.process_text(t)  for t in text ],
             input_type=input_type,
             embedding_types=['float'],
         )
+        sleep(20)
 
         if not res or not res.embeddings or not res.embeddings.float:
             self.logger.error("Error While embedding text with CoHere")
             return None
 
-        return res.embeddings.float[0]
+        return [f for f in res.embeddings.float]
+        # return res.embeddings.float[0]

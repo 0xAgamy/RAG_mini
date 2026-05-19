@@ -3,6 +3,7 @@ from ..LLMEnums import OpenAIEnums
 
 from openai import OpenAI
 import logging
+from typing import List, Union
 class OpenAIProvider(LLMInterface):
     def __init__(self, api_key:str, base_url:str=None,
                  default_input_max_characters:int=1000,
@@ -60,15 +61,18 @@ class OpenAIProvider(LLMInterface):
         if not response or not response.choices or  len(response.choices)==0 or not response.choices[0].message:
             self.logger.error("Error while generation text with OpenAI")
             return None
+        
         return response.choices[0].message.content
 
 
     
-    def embed_text(self, text:str, document_type:str=None):
+    def embed_text(self, text:Union[str, list[str]], document_type:str=None):
         
         if not self.client:
             self.logger.error("Embedding Model for OpenAI was not set")
             return None
+        if isinstance(text,str):
+            text = [text]
         if not self.embedding_model_id:
             self.logger.error("Embedding Model for OpenAI was not set")
             return None
@@ -82,7 +86,9 @@ class OpenAIProvider(LLMInterface):
             self.logger.error("Error while embedding text with OpenAI")
             return None
         
-        return response.data[0].embedding
+        return [rec.embedding for rec in response.data]
+        
+        # return response.data[0].embedding
 
 
 

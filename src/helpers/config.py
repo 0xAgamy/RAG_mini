@@ -1,6 +1,6 @@
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from pydantic import ValidationError
-
+from typing import List
 
 class Settings(BaseSettings):
     APP_NAME:str
@@ -30,9 +30,13 @@ class Settings(BaseSettings):
     DEFAULT_GENERATION_MAX_OUTPUT_TOKENS:int= None
     DEFAULT_GENERATION_TEMPERATURE:float= None
 
+    VECTOR_DB_BACKEND_LITERAL:List[str]=None
+
     VECTOR_DB_BACKEND:str
     VECTR_DB_PATH:str
     VECTOR_DB_DISTANCE_METHOD:str
+    VECTOR_DB_PGVEC_INDEX_THRESHOLD:int=100
+
     DEFAULT_LANGUAGE:str
 
     POSTGRES_USERNAME:str

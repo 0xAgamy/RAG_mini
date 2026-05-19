@@ -31,7 +31,7 @@ class ProjectModel(BaseDataModel):
 
 
 
-    async def get_project_or_create_one(self,project_id:str):
+    async def get_project_or_create_one(self,project_id:int):
         async with self.db_client() as session:
             async with session.begin():
                 query= select(Project).where(Project.project_id==project_id)
