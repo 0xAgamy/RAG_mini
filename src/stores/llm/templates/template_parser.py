@@ -32,7 +32,7 @@ class TemplateParser:
         if not os.path.exists(group_path):
             return None
         
-        module= __import__(f"src.stores.llm.templates.locales.{target_lang}.{group}", fromlist=[group])
+        module= __import__(f"stores.llm.templates.locales.{target_lang}.{group}", fromlist=[group])
         if not module:
             return None
         

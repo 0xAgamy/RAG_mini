@@ -1,11 +1,11 @@
 from fastapi import FastAPI, APIRouter,Request, status
 from fastapi.responses import JSONResponse
 import logging
-from src.routes.schemes.nlp import PushRequest, SearchRequest
-from src.models.ProjectModel import ProjectModel
-from src.models.ChunkModel import ChunkModel
-from src.models.enums.ResponseEnum import ResponseSignal
-from src.controllers import NLPController
+from routes.schemes.nlp import PushRequest, SearchRequest
+from models.ProjectModel import ProjectModel
+from models.ChunkModel import ChunkModel
+from models.enums.ResponseEnum import ResponseSignal
+from controllers import NLPController
 from tqdm.auto import  tqdm
 logger= logging.getLogger("uvicorn.error")
 nlp_router=APIRouter(

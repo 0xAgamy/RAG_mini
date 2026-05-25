@@ -1,6 +1,6 @@
 from .providers import QdrantDBProvider, PgVectorProvider
 from .VectorDBEnums import VectorDBEnums
-from src.controllers.BaseController import BaseController
+from controllers.BaseController import BaseController
 from sqlalchemy.orm import sessionmaker
 class VectorDBProviderFactory:
     def __init__(self,config,db_client:sessionmaker=None):

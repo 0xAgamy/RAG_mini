@@ -3,7 +3,7 @@ from ..VectorDBEnums import (DistanceMethodEnum, PgVectorIndexTypeEnums,
                               PgVectorTableSchemaEnums, PgVectroDistanceMethodEnums)
 
 from typing import List
-from src.models.db_schemes.ragdb.schemes.datachunk import RetrievedDocument
+from models.db_schemes.ragdb.schemes.datachunk import RetrievedDocument
 from sqlalchemy import text as sql_text
 import json
 import logging

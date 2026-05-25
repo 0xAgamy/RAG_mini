@@ -1,20 +1,20 @@
 from fastapi import FastAPI, APIRouter, Depends, UploadFile, status, Request
 from fastapi.responses import JSONResponse
-from src.helpers.config import get_settings,Settings
+from helpers.config import get_settings,Settings
 
-from src.controllers import DataController, ProjectController, ProcessController, NLPController
+from controllers import DataController, ProjectController, ProcessController, NLPController
 import os
 import aiofiles
-from src.models import ResponseSignal
+from models import ResponseSignal
 
 import logging
 from .schemes.data import ProcessRequest 
-from src.models.ProjectModel import ProjectModel
-from src.models.db_schemes import DataChunk, Asset
-from src.models.ChunkModel import ChunkModel
-from src.models.AssetModel import AssetModel
+from models.ProjectModel import ProjectModel
+from models.db_schemes import DataChunk, Asset
+from models.ChunkModel import ChunkModel
+from models.AssetModel import AssetModel
 
-from src.models.enums.AssetTypeEnum import AssetTeypeEnum
+from models.enums.AssetTypeEnum import AssetTeypeEnum
 
 logger= logging.getLogger("uvicorn.error")
 data_router=APIRouter(

@@ -2,19 +2,20 @@ from fastapi import FastAPI
 from contextlib import asynccontextmanager
 
 
-from src.helpers.config import get_settings
-from src.routes import base,data, nlp
-from src.stores.llm.LLMProviderFactory import LLMProviderFactory
-from src.stores.vectordb.VectorDBProviderFactory import VectorDBProviderFactory
-from src.stores.llm.templates.template_parser import TemplateParser
+from helpers.config import get_settings
+from routes import base,data, nlp
+from stores.llm.LLMProviderFactory import LLMProviderFactory
+from stores.vectordb.VectorDBProviderFactory import VectorDBProviderFactory
+from stores.llm.templates.template_parser import TemplateParser
 
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.orm import sessionmaker
 
+from utils.metrics import setup_metrics
 
 async def startup_span(app:FastAPI):
     settings=get_settings()
-    postgres_conn= f"postgresql+asyncpg://{settings.POSTGRES_USERNAME}:{settings.POSTGRES_PASSWORD}@localhost:{settings.POSTGRES_PORT}/{settings.POSTGRES_MAIN_DATABASE}"
+    postgres_conn= f"postgresql+asyncpg://{settings.POSTGRES_USERNAME}:{settings.POSTGRES_PASSWORD}@{settings.POSTGRES_HOST}:{settings.POSTGRES_PORT}/{settings.POSTGRES_MAIN_DATABASE}"
     
     app.db_engine=create_async_engine(postgres_conn)
     
@@ -59,6 +60,7 @@ async def lifespan(app: FastAPI):
     await shutdown_span(app)
 
 app=FastAPI(lifespan=lifespan)
+setup_metrics(app=app)
 app.include_router(base.base_router)
 app.include_router(data.data_router)
 app.include_router(nlp.nlp_router)

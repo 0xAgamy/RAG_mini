@@ -45,7 +45,9 @@ class Settings(BaseSettings):
     POSTGRES_PORT:str
     POSTGRES_MAIN_DATABASE:str
 
-    model_config = SettingsConfigDict(env_file="src/.env")
+    
+    model_config = SettingsConfigDict(env_file=".env")
+
 
 def get_settings():
     try:
