@@ -92,7 +92,7 @@ class CoHereProvider(LLMInterface):
             input_type=input_type,
             embedding_types=['float'],
         )
-        sleep(20)
+        # sleep(20)
 
         if not res or not res.embeddings or not res.embeddings.float:
             self.logger.error("Error While embedding text with CoHere")

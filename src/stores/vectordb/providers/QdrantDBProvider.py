@@ -5,12 +5,13 @@ from qdrant_client import QdrantClient, models
 from typing import List
 from models.db_schemes.ragdb.schemes.datachunk import RetrievedDocument
 class QdrantDBProvider(VectorDBInterface):
-    def __init__(self,db_client:str,default_vector_size:int=786,
+    def __init__(self,db_client:str,default_vector_size:int=384,
                  distance_method:str=None,
                  index_threshold:int=100):
         super().__init__()
         self.client=None
         self.db_client= db_client
+        self.default_vector_size= default_vector_size
         self.distance_method=None
 
         if distance_method == DistanceMethodEnum.COSINE.value:
@@ -23,7 +24,8 @@ class QdrantDBProvider(VectorDBInterface):
 
 
     async def connect(self):
-        self.client= QdrantClient(path=self.db_client)
+        print(f"db_client: {self.db_client}")
+        self.client= QdrantClient(url=self.db_client)
     
 
     async def disconnect(self):
@@ -50,17 +52,21 @@ class QdrantDBProvider(VectorDBInterface):
                           do_reset:bool=False):
         
         if do_reset:
-            _ =self.delete_collection(collection_name)
+            await self.delete_collection(collection_name)
         
-        if not self.is_collection_exist(collection_name):
+        if not await self.is_collection_exist(collection_name):
             self.logger.info(f"Creating new Qdrant collection: {collection_name}")
-            _ =self.client.create_collection(
+            self.client.create_collection(
                 collection_name=collection_name,
                 vectors_config=models.VectorParams(
                     size=embedding_size,
                     distance=self.distance_method)
                  )
+
+            
             return True
+        
+        self.logger.info(f"Cannot Create a  new Qdrant collection: {collection_name}")
         
         return False 
 
@@ -70,7 +76,7 @@ class QdrantDBProvider(VectorDBInterface):
                    text:str, vector:List,
                    metadata:dict=None,
                    record_id:str=None):
-        if not self.is_collection_exist(collection_name):
+        if not await self.is_collection_exist(collection_name):
             self.logger.error("Can't insert new record to non-existed collection{collection_name}")
             return False
         
@@ -135,7 +141,7 @@ class QdrantDBProvider(VectorDBInterface):
             limit=limit,
             
         )
-    
+        print(results)
         if not results :
             return None
         return [    

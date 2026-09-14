@@ -3,16 +3,16 @@ from .VectorDBEnums import VectorDBEnums
 from controllers.BaseController import BaseController
 from sqlalchemy.orm import sessionmaker
 class VectorDBProviderFactory:
-    def __init__(self,config,db_client:sessionmaker=None):
+    def __init__(self,config,db_client):
         self.config= config
         self.base_controller=BaseController()
         self.db_client= db_client
 
     def create(self,provider:str):
         if provider == VectorDBEnums.QDRANT.value:
-            qdrant_db_client=self.base_controller.get_database_path(db_name=self.config.VECTR_DB_PATH)
+            # qdrant_db_client=self.base_controller.get_database_path(db_name=self.config.VECTR_DB_PATH)
             return QdrantDBProvider(
-                db_path=qdrant_db_client,
+                db_client=self.config.VECTR_DB_PATH,
                 distance_method=self.config.VECTOR_DB_DISTANCE_METHOD,
             )
         if provider == VectorDBEnums.PGVECTOR.value:
