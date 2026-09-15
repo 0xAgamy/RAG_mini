@@ -24,7 +24,6 @@ class QdrantDBProvider(VectorDBInterface):
 
 
     async def connect(self):
-        print(f"db_client: {self.db_client}")
         self.client= QdrantClient(url=self.db_client)
     
 
@@ -141,7 +140,6 @@ class QdrantDBProvider(VectorDBInterface):
             limit=limit,
             
         )
-        print(results)
         if not results :
             return None
         return [    

@@ -46,7 +46,6 @@ async def index_project(request:Request, project_id:int,push_request:PushRequest
     idx=0
 
     collection_name= nlp_controller.create_collection_name(project_id=project.project_id)
-    print(f"Collection name: {collection_name}")
     _ = await request.app.vectordb_client.create_collection(
         collection_name=collection_name,
         embedding_size=request.app.embedding_client.embedding_size,

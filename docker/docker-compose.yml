@@ -141,6 +141,21 @@ services:
 
 
 
+  #minio
+  minio:
+    image: alpine/minio:latest-release
+    container_name: rag_minio
+    env_file:
+      - ./env/.env.app
+    ports:
+      - "9000:9000" 
+      - "9001:9001"
+    volumes:
+      - minio_data:/data
+    command: server /data --console-address ":9001"
+    networks:
+      - backend
+    user: "0:0"
 
   
 
@@ -156,3 +171,4 @@ volumes:
   qdrant_data:
   prometheus_data:
   grafana_data:
+  minio_data:

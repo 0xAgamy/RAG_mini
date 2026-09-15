@@ -22,3 +22,4 @@ starlette_exporter==0.23.0
 fastapi-health==0.4.0
 
 psycopg2-binary==2.9.12
+minio==7.2.20

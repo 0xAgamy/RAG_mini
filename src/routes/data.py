@@ -6,7 +6,7 @@ from controllers import DataController, ProjectController, ProcessController, NL
 import os
 import aiofiles
 from models import ResponseSignal
-
+import uuid
 import logging
 from .schemes.data import ProcessRequest 
 from models.ProjectModel import ProjectModel
@@ -24,7 +24,7 @@ data_router=APIRouter(
 
 @data_router.post("/upload/{project_id}")
 async def upload_data(request:Request,project_id:int, file:UploadFile,
-                      app_settings:Settings=Depends(get_settings)):
+                    app_settings:Settings=Depends(get_settings)):
     
     project_model= await ProjectModel.create_instance(
         db_client=request.app.db_client
@@ -43,24 +43,12 @@ async def upload_data(request:Request,project_id:int, file:UploadFile,
                 "signal": result_signal
             }
         )
-    project_dir_path= ProjectController().get_project_path(project_id=project_id)
-    file_path, file_id= data_controller.generate_unique_filepath(
-        original_name=file.filename,
-        project_id=project_id
-    )
 
-    try:
-        async with aiofiles.open(file_path,'wb') as f :
-            while chunk := await file.read(app_settings.FILE_DEFAULT_CHUNK_SIZE):
-                await f.write(chunk)
-    except Exception as e:
-        logger.error(f"Error While upload file: {e}")
-        return JSONResponse(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            content={
-                "signal": ResponseSignal.FILE_UPLOADED_FAILED.value
-            }
-        )
+    file_extension = file.filename.split(".")[-1] if "." in file.filename else "bin"
+    object_name = f"documents/{uuid.uuid4()}.{file_extension}"
+    
+    file_id=await request.app.storage_client.upload_file(file,object_name)
+    file_size= await request.app.storage_client.file_size(object_name)
     
     # store asset in db
     asset_model= await AssetModel.create_instance(
@@ -68,13 +56,13 @@ async def upload_data(request:Request,project_id:int, file:UploadFile,
     )
 
     asset_resource= Asset(
-         asset_project_id=project.project_id,
-         asset_type=AssetTeypeEnum.FILE.value,
-         asset_name=file_id,
-         asset_size=os.path.getsize(file_path)
+        asset_project_id=project.project_id,
+        asset_type=AssetTeypeEnum.FILE.value,
+        asset_name=file_id,
+        asset_size=file_size
     )
     asset_record= await asset_model.create_asset(asset_resource)
- 
+
     return JSONResponse(
             content={
                 "signal": ResponseSignal.FILE_UPLOADED_SUCCESS.value,
@@ -109,25 +97,25 @@ async def process_endpoint(request:Request,project_id:int,process_request:Proces
     project_file_ids= {}    
     if process_request.file_id :
         asset_record= await asset_model.get_asset_record(
-             asset_project_id=project.project_id,
-             asset_name=process_request.file_id
+            asset_project_id=project.project_id,
+            asset_name=process_request.file_id
         )
         if asset_record is None:
             return JSONResponse(
-                 status_code=status.HTTP_400_BAD_REQUEST,
-                 content={
-                      "signal": ResponseSignal.FILE_ID_ERROR.value
-                 }
+                status_code=status.HTTP_400_BAD_REQUEST,
+                content={
+                    "signal": ResponseSignal.FILE_ID_ERROR.value
+                }
             )
-             
+            
         project_file_ids={
-             asset_record.asset_id: asset_record.asset_name
+            asset_record.asset_id: asset_record.asset_name
         }
     else:
         
 
         project_files=  await asset_model.get_all_projects_assets(asset_project_id=project.project_id,
-                                                                 asset_type=AssetTeypeEnum.FILE.value)
+                                                                asset_type=AssetTeypeEnum.FILE.value)
 
         project_file_ids={
             record.asset_id : record.asset_name
@@ -157,15 +145,16 @@ async def process_endpoint(request:Request,project_id:int,process_request:Proces
     no_records,no_files= 0, 0
 
     for asset_id,file_id in project_file_ids.items():
-        file_content= process_controller.get_file_content(file_id=file_id)
+        
+        file_content=await request.app.storage_client.get_file_content(file_id)
+        file_content= process_controller.get_file_loader(file_content,file_id)
         if file_content is None:
-             logger.error(f"Error while processing file: {file_id}")
-             continue
+            logger.error(f"Error while processing file: {file_id}")
+            continue
         file_chunks =process_controller.process_file_content(
             file_content=file_content,
             chunk_size=chunk_size,
             overlap_size=overlap_size,
-            file_id=file_id
         )
 
         if file_chunks is None or len(file_chunks) == 0:

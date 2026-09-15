@@ -45,7 +45,12 @@ class Settings(BaseSettings):
     POSTGRES_PORT:str
     POSTGRES_MAIN_DATABASE:str
 
-    
+    STORAGE_PROVIDER:str
+    MINIO_ENDPOINT:str
+    MINIO_ROOT_USER:str
+    MINIO_ROOT_PASSWORD:str
+    MINIO_BUCKET_NAME:str
+    MINIO_SECURE:str
     model_config = SettingsConfigDict(env_file=".env")
 
 

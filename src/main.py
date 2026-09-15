@@ -10,6 +10,7 @@ from stores.llm.templates.template_parser import TemplateParser
 
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.orm import sessionmaker
+from stores.storage.factory import StorageFactory
 
 from utils.metrics import setup_metrics
 
@@ -26,6 +27,8 @@ async def startup_span(app:FastAPI):
 
     )
 
+    storage_provider_factory= StorageFactory(settings)
+    app.storage_client= storage_provider_factory.create()
     llm_provider_factory=LLMProviderFactory(settings)
     vectordb_provider_factory=VectorDBProviderFactory(config=settings,db_client=app.db_client)
     app.generation_client=llm_provider_factory.create(provider=settings.GENERATION_BACKEND)
