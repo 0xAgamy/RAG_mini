@@ -1,4 +1,4 @@
-from .minio_storage import MinIoStorage
+from .providers.MinioStorageProvider import MinIoStorage
 
 class StorageFactory:
     def __init__(self,config:dict):
