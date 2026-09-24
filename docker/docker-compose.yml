@@ -40,7 +40,7 @@ services:
     image: pgvector/pgvector:0.8.2-pg18-trixie
     container_name: pgvector
     ports:
-      - "5432:5432"
+      - "5400:5432"
     volumes:
       - pgvector_data:/var/lib/postgresql
     env_file:
@@ -144,7 +144,7 @@ services:
   #minio
   minio:
     image: alpine/minio:latest-release
-    container_name: rag_minio
+    container_name: minio
     env_file:
       - ./env/.env.app
     ports:
@@ -157,7 +157,46 @@ services:
       - backend
     user: "0:0"
 
-  
+  #RabbitMQ
+  rabbitmq:
+    image: rabbitmq:4.3.6-management-alpine
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+      - ./rabbitmq/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
+    env_file:
+      - ./env/.env.rabbitmq
+    networks:
+      - backend
+    restart: always
+
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics","ping"]
+      timeout: 10s
+      retries: 5
+
+
+  ## Redis
+  redis:
+    image: redis:alpine3.23
+    container_name: redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    env_file:
+      - ./env/.env.redis
+    networks:
+      - backend
+    restart: always
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      timeout: 10s
+      retries: 5
+    command: ["redis-server","--appendonly","yes","--requirepass","${REDIS_PASSWORD}"]
 
 
 
@@ -172,3 +211,5 @@ volumes:
   prometheus_data:
   grafana_data:
   minio_data:
+  rabbitmq_data:
+  redis_data:
