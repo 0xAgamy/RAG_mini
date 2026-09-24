@@ -5,7 +5,7 @@ from qdrant_client import QdrantClient, models
 from typing import List
 from models.db_schemes.ragdb.schemes.datachunk import RetrievedDocument
 class QdrantDBProvider(VectorDBInterface):
-    def __init__(self,db_client:str,default_vector_size:int=384,
+    def __init__(self,db_client:str,default_vector_size:int,
                  distance_method:str=None,
                  index_threshold:int=100):
         super().__init__()
@@ -41,7 +41,7 @@ class QdrantDBProvider(VectorDBInterface):
     
 
     async def delete_collection(self,collection_name:str):
-        if self.is_collection_exist(collection_name):
+        if await self.is_collection_exist(collection_name):
             return self.client.delete_collection(collection_name=collection_name)
         
 
@@ -117,7 +117,6 @@ class QdrantDBProvider(VectorDBInterface):
             ]
 
             try:
-                
                 self.client.upload_collection(
                     collection_name=collection_name,
                     ids=b_ids,

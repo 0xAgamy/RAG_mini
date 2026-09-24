@@ -2,15 +2,12 @@ from celery_app import celery_app, get_setup_utils
 import logging
 import asyncio
 
-from controllers import DataController, ProjectController, ProcessController, NLPController
-import os
-import aiofiles
+from controllers import ProcessController, NLPController
 from models import ResponseSignal
-import uuid
 import logging
 
 from models.ProjectModel import ProjectModel
-from models.db_schemes import DataChunk, Asset
+from models.db_schemes import DataChunk
 from models.ChunkModel import ChunkModel
 from models.AssetModel import AssetModel
 from models.enums.AssetTypeEnum import AssetTeypeEnum
