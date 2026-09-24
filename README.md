@@ -176,6 +176,25 @@ Import the bundled dashboard JSON from `/grafana/dashboards/`.
 - All database connections use environment-injected credentials
 - Nginx handles TLS termination and rate limiting in production
 
+## 🧪 Testing
+
+The test suite lives in [`src/tests/`](src/tests/) and uses mocks/fakes for
+external services, so it does not require PostgreSQL, MinIO, Qdrant, Celery,
+or an LLM API key.
+
+```bash
+pip install -r src/requirements-dev.txt
+pytest
+```
+
+Run a single module with, for example:
+
+```bash
+pytest src/tests/test_nlp_controller.py
+```
+
+---
+
 ## 📄 License
 
 MIT License — see [LICENSE](LICENSE) for details.
