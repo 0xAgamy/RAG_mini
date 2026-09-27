@@ -16,6 +16,7 @@ from models.AssetModel import AssetModel
 
 from models.enums.AssetTypeEnum import AssetTeypeEnum
 from tasks.file_processing import process_project_file
+from tasks.process_workflow import process_workflow
 
 logger= logging.getLogger("uvicorn.error")
 data_router=APIRouter(
@@ -86,5 +87,22 @@ async def process_endpoint(request:Request,project_id:int,process_request:Proces
         content={
             "singal": "process",
             "task_id": task.id,
+        }
+    )
+
+
+@data_router.post("/process-and-push/{project_id}")
+async def process_and_push_endpoint(request:Request,project_id:int,process_request:ProcessRequest):
+    workflow_task= process_workflow.delay(
+        project_id=project_id,
+        file_id=process_request.file_id,
+        chunk_size=process_request.chunk_size,
+        overlap_size=process_request.overlap_size,
+        do_reset=process_request.do_reset
+    )
+    return JSONResponse(
+        content={
+            "singal": "process",
+            "workflow_task_id": workflow_task.id,
         }
     )
