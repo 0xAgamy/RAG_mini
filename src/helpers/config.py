@@ -45,7 +45,21 @@ class Settings(BaseSettings):
     POSTGRES_PORT:str
     POSTGRES_MAIN_DATABASE:str
 
-    
+    STORAGE_PROVIDER:str
+    MINIO_ENDPOINT:str
+    MINIO_ROOT_USER:str
+    MINIO_ROOT_PASSWORD:str
+    MINIO_BUCKET_NAME:str
+    MINIO_SECURE:str
+
+
+    CELERY_BROKER_URL:str
+    CELERY_RESULT_BACKEND:str
+    CELERY_TASK_SERIALIZER:str
+    CELERY_TASK_TIME_LIMIT:int
+    CELERY_TASK_ACKS_LATE:bool= True
+    CELERY_WORKER_CONCURRENCY:int
+
     model_config = SettingsConfigDict(env_file=".env")
 
 
