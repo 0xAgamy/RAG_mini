@@ -27,7 +27,7 @@ if str(SRC_ROOT) not in sys.path:
 # non-production values so importing a task never requires a real service or
 # reads a developer's local .env file.
 TEST_ENV = {
-    "APP_NAME": "RAG-mini-test",
+    "APP_NAME": "RagFlow-test",
     "APP_VERSION": "test",
     "FILE_ALLOWED_TYPES": '["text/plain", "application/pdf"]',
     "FILE_MAX_SIZE": "10",
@@ -76,7 +76,7 @@ def test_settings(monkeypatch: pytest.MonkeyPatch) -> SimpleNamespace:
     """Return a lightweight settings object and isolate controller settings."""
 
     settings = SimpleNamespace(
-        APP_NAME="RAG-mini-test",
+        APP_NAME="RagFlow-test",
         APP_VERSION="test",
         FILE_ALLOWED_TYPES=["text/plain", "application/pdf"],
         FILE_MAX_SIZE=10,

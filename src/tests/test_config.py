@@ -9,7 +9,7 @@ from helpers.config import Settings
 def test_settings_load_deterministic_test_environment():
     settings = Settings()
 
-    assert settings.APP_NAME == "RAG-mini-test"
+    assert settings.APP_NAME == "RagFlow-test"
     assert settings.FILE_ALLOWED_TYPES == ["text/plain", "application/pdf"]
     assert settings.EMBEDING_MODEL_ID == "test-embedding-model"
     assert settings.EMBEDDING_MODEL_SIZE == 384

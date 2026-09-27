@@ -48,7 +48,7 @@ def make_app(router: APIRouter) -> FastAPI:
     app.template_parser = object()
     app.include_router(router)
     app.dependency_overrides[get_settings] = lambda: SimpleNamespace(
-        APP_NAME="RAG-mini-test",
+        APP_NAME="RagFlow-test",
         APP_VERSION="test",
         FILE_ALLOWED_TYPES=["text/plain", "application/pdf"],
         FILE_MAX_SIZE=10,
@@ -66,7 +66,7 @@ def test_welcome_endpoint_returns_application_metadata():
     response = make_request(app, "GET", "/api/v1/")
 
     assert response.status_code == 200
-    assert response_json(response) == {"app": "RAG-mini-test", "version": "test"}
+    assert response_json(response) == {"app": "RagFlow-test", "version": "test"}
 
 
 def test_upload_endpoint_validates_stores_and_returns_file_id(
