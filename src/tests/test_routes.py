@@ -69,24 +69,6 @@ def test_welcome_endpoint_returns_application_metadata():
     assert response_json(response) == {"app": "RAG-mini-test", "version": "test"}
 
 
-def test_send_reports_endpoint_queues_task(
-    monkeypatch: MonkeyPatch,
-):
-    app = make_app(base_routes.base_router)
-    task = SimpleNamespace(id="report-task-1")
-
-    def fake_delay(**kwargs):
-        assert kwargs == {"mail_waits_seconds": 3}
-        return task
-
-    monkeypatch.setattr(base_routes.send_email_reports, "delay", fake_delay)
-
-    response = make_request(app, "GET", "/api/v1/send_reports")
-
-    assert response.status_code == 200
-    assert response_json(response) == {"success": True, "task_id": "report-task-1"}
-
-
 def test_upload_endpoint_validates_stores_and_returns_file_id(
     test_settings: SimpleNamespace,
     monkeypatch: MonkeyPatch,

@@ -168,6 +168,8 @@ def test_process_project_file_successfully_indexes_stored_content(
         "singal": "processing_success",
         "inserted_chunks": 1,
         "processed_files": 1,
+        "project_id":7,
+        "do_reset":0
     }
     assert state["asset_lookup"] == (7, "asset-document.txt")
     assert state["processed_project_id"] == 7
