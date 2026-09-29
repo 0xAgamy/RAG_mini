@@ -16,8 +16,8 @@ class PgVectorProvider(VectorDBInterface):
         self.default_vector_size = default_vector_size
         if distance_method == DistanceMethodEnum.COSINE.value:
             distance_method= PgVectroDistanceMethodEnums.COSINE.value
-        elif distance_method== DistanceMethodEnum.DOT.value:
-            distance_method== PgVectroDistanceMethodEnums.DOT.value
+        else:
+            distance_method= PgVectroDistanceMethodEnums.DOT.value
 
         self.distance_method = distance_method 
         self.index_threshold=index_threshold
@@ -50,7 +50,10 @@ class PgVectorProvider(VectorDBInterface):
         records= []
         async with self.db_client() as session:
             async with session.begin():
-                list_tbls= sql_text("SELLECT * FROM pg_tables WHERE tablename LIKE :prefix")
+                list_tbls= sql_text(
+                    "SELECT tablename FROM pg_tables",
+                    "WHERE schemaname = current_schema() AND tablename LIKE :prefix"
+                    )
 
                 results= await session.execute(list_tbls, {"prefix": self.pgvector_table_prefix})
                 return results.scalars().all()
@@ -232,6 +235,11 @@ class PgVectorProvider(VectorDBInterface):
                                 metadata:List=None,
                                 record_id:List=None,
                                 batch_size:int=50):
+        record_id = record_id or list(range(len(texts)))
+        if not (len(texts) == len(vectors) == len(record_id)):
+            self.logger.error("Mismatched insert payload")
+            return False
+
         is_collection_exist= await self.is_collection_exist(collection_name=collection_name)
         if not is_collection_exist:
             self.logger.error(f"Can not insert new records to not existing table: {collection_name}")

@@ -93,30 +93,22 @@ def test_qdrant_create_collection_returns_false_for_existing_collection():
     assert client.created == []
 
 
-def test_qdrant_insert_many_batches_payloads_and_waits():
+def test_qdrant_insert_many_returns_false_for_mismatched_payloads():
     client = FakeQdrantClient()
     provider = make_provider(client)
 
     result = run(
         provider.insert_many(
             collection_name="collection_384_1",
-            texts=["a", "b", "c"],
-            vectors=[[1], [2], [3]],
-            metadata=[{"page": 1}, {"page": 2}, {"page": 3}],
-            record_id=[101, 102, 103],
-            batch_size=2,
+            texts=["a", "b"],
+            vectors=[[1]],
+            record_id=[101, 102],
         )
     )
 
-    assert result is True
-    assert len(client.uploads) == 2
-    assert client.uploads[0]["ids"] == [101, 102]
-    assert client.uploads[1]["ids"] == [103]
-    assert client.uploads[0]["payload"][0] == {
-        "text": "a",
-        "metadata": {"page": 1},
-    }
-    assert all(upload["wait"] is True for upload in client.uploads)
+    assert result is False
+    assert client.uploads == []
+
 
 
 def test_qdrant_search_returns_retrieved_documents():

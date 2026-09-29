@@ -8,6 +8,7 @@ import pytest
 from stores.llm.LLMProviderFactory import LLMProviderFactory
 from stores.storage.StorageProviderFactory import StorageFactory
 from stores.vectordb.VectorDBProviderFactory import VectorDBProviderFactory
+from stores.vectordb.providers import PgVectorProvider, QdrantDBProvider
 
 
 llm_factory_module = importlib.import_module(
@@ -131,15 +132,17 @@ def test_vector_factory_creates_pgvector_provider(
     assert captured["default_vector_size"] == 1536
     assert captured["index_threshold"] == 100
 
-
-def test_vector_factory_returns_none_for_unknown_provider(test_settings: SimpleNamespace):
-    assert (
-        VectorDBProviderFactory(
-            config=vector_config(),
-            db_client=object(),
-        ).create("UNKNOWN")
-        is None
+def test_vector_factory_raises_for_unknown_provider(test_settings: SimpleNamespace):
+    factory = VectorDBProviderFactory(
+        config=vector_config(),
+        db_client=object(),
     )
+
+    with pytest.raises(
+        ValueError,
+        match=r"Unsupported vector db provider 'UNKNOWN'",
+    ):
+        factory.create("UNKNOWN")
 
 
 def test_storage_factory_supports_minio_and_s3_names(

@@ -9,7 +9,6 @@ class VectorDBProviderFactory:
 
     def create(self,provider:str):
         if provider == VectorDBEnums.QDRANT.value:
-            # qdrant_db_client=self.base_controller.get_database_path(db_name=self.config.VECTR_DB_PATH)
             return QdrantDBProvider(
                 db_client=self.config.VECTR_DB_PATH,
                 default_vector_size=self.config.EMBEDDING_MODEL_SIZE,
@@ -24,5 +23,8 @@ class VectorDBProviderFactory:
             )
 
         
-        return None
+        raise ValueError(
+            f"Unsupported vector db provider {provider!r}; "
+            f"expected one of {[e.value for e in VectorDBEnums]}"
+        )
 

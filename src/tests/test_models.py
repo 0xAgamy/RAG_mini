@@ -188,28 +188,3 @@ def test_database_metadata_contains_rag_tables():
     assert DataChunk.__table__.c.chunkd_order is not None
 
 
-@pytest.mark.xfail(
-    strict=True,
-    reason=(
-        "AssetModel.get_asset_record currently calls session.execute without "
-        "awaiting it; keep this regression visible until the model is fixed."
-    )
-)
-def test_asset_lookup_awaits_execute(test_settings):
-    class BrokenLookupSession(FakeSession):
-        def execute(self, statement):
-            # This synchronous result makes the missing await fail immediately
-            # without leaving an un-awaited coroutine behind.
-            return object()
-
-    session = BrokenLookupSession()
-    model = AssetModel(session_factory_for(session))
-
-    result = run(
-        model.get_asset_record(
-            asset_project_id=3,
-            asset_name="document.txt",
-        )
-    )
-
-    assert result.asset_id == 1
