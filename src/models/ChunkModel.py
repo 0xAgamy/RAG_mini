@@ -2,7 +2,6 @@ from .BaseDataModel import BaseDataModel
 from .db_schemes import DataChunk
 from .enums.DatabaseEnum import DatabaseEnum
 from bson.objectid import ObjectId
-from pymongo import InsertOne
 from sqlalchemy.future import select
 from sqlalchemy import func,delete
 class ChunkModel(BaseDataModel):
@@ -61,13 +60,16 @@ class ChunkModel(BaseDataModel):
 
 
     async def get_project_chunks(self,project_id:ObjectId,page_no:int=1,page_size:int=50):
+        page_no=max(1,page_no)
         async with self.db_client() as session:
-            async with session.begin():
-                stmt= select(DataChunk).where(DataChunk.chunk_project_id== project_id).offset((page_no -1)* page_size).limit(page_size)
-                result= await session.execute(stmt)
-                records= result.scalars().all()
-        
-        return records
+            stmt=(
+                select(DataChunk)
+                .where(DataChunk.chunk_project_id==project_id)
+                .order_by(DataChunk.chunk_id)
+                .offset((page_no -1 ) * page_size)
+                .limit(page_size)
+            )
+            return list((await session.execute(stmt)).scalars().all())
 
 
     async def get_total_chunks_count(self, project_id:ObjectId):
