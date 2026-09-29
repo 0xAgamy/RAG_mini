@@ -44,7 +44,6 @@ class AssetModel(BaseDataModel):
                 Asset.asset_name==asset_name
 
             )
-            result= session.execute(stmt)
-            records= result.scalars().all()
-        return records
-       
+            result= await session.execute(stmt)
+            
+            return result.scalar_one_or_none()  
