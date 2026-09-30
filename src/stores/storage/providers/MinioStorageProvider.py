@@ -13,18 +13,19 @@ class MinIoStorage(BaseStorage):
             self.config.MINIO_ENDPOINT,
             access_key= self.config.MINIO_ROOT_USER,
             secret_key= self.config.MINIO_ROOT_PASSWORD,
-            secure=False
+            secure=self.config.MINIO_SECURE
         )
         self.bucket_name= self.config.MINIO_BUCKET_NAME
         
 
     def _enshure_bucket_exist(self):
-        if len(self.client.list_buckets()) == 0 :
+
+        if not self.client.bucket_exists(self.bucket_name):
             self.client.make_bucket(self.bucket_name)
 
-
-        # if not self.client.bucket_exists(self.bucket_name):
+        # if len(self.client.list_buckets()) == 0 :
         #     self.client.make_bucket(self.bucket_name)
+
 
     async def upload_file(self,file: UploadFile, object_name:str):
         self._enshure_bucket_exist()
@@ -70,18 +71,21 @@ class MinIoStorage(BaseStorage):
 
 
     async def file_size(self, object_name:str):
-            def _check():
-                    result=self.client.stat_object(self.bucket_name, object_name)
-                    return result.size /  1_000_000
-            return await asyncio.to_thread(_check)
-
+        result= await asyncio.to_thread(
+            self.client.stat_object,
+            self.bucket_name,
+            object_name
+        )
+        return result.size
     async def get_file_content(self, object_name: str) -> bytes:
-        def _get():
-            response = self.client.get_object(
-                self.bucket_name,
-                object_name
+        max_bytes = self.config.FILE_MAX_SIZE * 1024 * 1024
+        if await self.file_size(object_name) > max_bytes:
+            raise ValueError(
+                f"{object_name} exceeds the configured {self.config.FILE_MAX_SIZE}MB limit"
             )
 
+        def _get():
+            response = self.client.get_object(self.bucket_name, object_name)
             try:
                 return response.read()
             finally:
@@ -89,6 +93,3 @@ class MinIoStorage(BaseStorage):
                 response.release_conn()
 
         return await asyncio.to_thread(_get)
-
-
-
