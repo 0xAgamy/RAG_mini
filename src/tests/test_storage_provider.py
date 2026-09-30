@@ -20,9 +20,12 @@ class FakeMinioClient:
         self.uploads: list[dict] = []
         self.deleted: list[str] = []
         self.downloads: list[tuple[str, str, str]] = []
+        
 
     def list_buckets(self):
         return self.buckets
+    def bucket_exists(self, bucket):
+        return bucket in self.buckets
 
     def make_bucket(self, bucket):
         self.buckets.append(bucket)
@@ -74,6 +77,8 @@ def make_storage(monkeypatch: pytest.MonkeyPatch, client: FakeMinioClient):
             MINIO_ROOT_USER="user",
             MINIO_ROOT_PASSWORD="password",
             MINIO_BUCKET_NAME="documents",
+            MINIO_SECURE=False,
+            FILE_MAX_SIZE=10,
         )
     )
 
@@ -110,7 +115,7 @@ def test_minio_size_and_content_helpers_return_values(
     client = FakeMinioClient()
     storage = make_storage(monkeypatch, client)
 
-    assert asyncio.run(storage.file_size("documents/notes.txt")) == 2.0
+    assert asyncio.run(storage.file_size("documents/notes.txt")) == 2_000_000
     assert asyncio.run(storage.get_file_content("documents/notes.txt")) == b"stored content"
 
 

@@ -23,10 +23,6 @@ class MinIoStorage(BaseStorage):
         if not self.client.bucket_exists(self.bucket_name):
             self.client.make_bucket(self.bucket_name)
 
-        # if len(self.client.list_buckets()) == 0 :
-        #     self.client.make_bucket(self.bucket_name)
-
-
     async def upload_file(self,file: UploadFile, object_name:str):
         self._enshure_bucket_exist()
 
