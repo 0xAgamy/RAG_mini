@@ -24,7 +24,7 @@ def process_project_file(self,
                         do_reset,
                         ):
 
-    asyncio.run(_process_project_file(
+    return asyncio.run(_process_project_file(
         self,
          project_id,
         file_id,
@@ -103,7 +103,7 @@ async def _process_project_file(task_instance,
             task_instance.update_state(
                             state="FAILURE",
                             meta={
-                            "singal": ResponseSignal.NO_FILES_ERROR.value
+                            "signal": ResponseSignal.NO_FILES_ERROR.value
 
                             }
             )
@@ -157,14 +157,14 @@ async def _process_project_file(task_instance,
             no_files+=1
 
         task_instance.update_state(
-            status="SUCCESS",
+            state="SUCCESS",
             meta={
-                "singal": ResponseSignal.PROCESSING_SUCCESS.value,
+                "signal": ResponseSignal.PROCESSING_SUCCESS.value,
             }
         )
 
         return {
-                "singal": ResponseSignal.PROCESSING_SUCCESS.value,
+                "signal": ResponseSignal.PROCESSING_SUCCESS.value,
                 "inserted_chunks": no_records,
                 "processed_files":no_files,
                 "project_id":project_id,

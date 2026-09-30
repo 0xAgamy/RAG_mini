@@ -11,11 +11,11 @@ from tasks.data_indexing import _index_data_content
 
 @celery_app.task(bind=True)
 def push_after_process_task(self,prev_task_result):
-    project_id= prev_task_result.get("proejct_id")
+    project_id= prev_task_result.get("project_id")
     do_reset= prev_task_result.get("do_reset")
 
     task_result= asyncio.run(
-        _index_data_content.apply_async(args=[project_id,do_reset])
+        _index_data_content(self,project_id=project_id,do_reset=do_reset)
     )
 
     return{

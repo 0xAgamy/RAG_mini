@@ -165,7 +165,7 @@ def test_process_project_file_successfully_indexes_stored_content(
     # The task currently exposes the legacy ``singal`` key; the test keeps the
     # characterization explicit so it can be updated with the public contract.
     assert result == {
-        "singal": "processing_success",
+        "signal": "processing_success",
         "inserted_chunks": 1,
         "processed_files": 1,
         "project_id":7,
@@ -175,7 +175,7 @@ def test_process_project_file_successfully_indexes_stored_content(
     assert state["processed_project_id"] == 7
     assert state["inserted_chunks"][0].chunk_text == "chunk"
     assert state["inserted_chunks"][0].chunk_project_id == 7
-    assert task.states[-1]["status"] == "SUCCESS"
+    assert task.states[-1]["state"] == "SUCCESS"
     assert storage.reads == ["asset-document.txt"]
     assert engine.disposed is True
     assert vector_db.disconnected is True
